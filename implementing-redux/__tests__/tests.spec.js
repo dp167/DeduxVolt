@@ -34,12 +34,24 @@ describe('dedux', () => {
         expect(() => {
           store.dispatch({ type: 'TEST_ACTION', randomKey: 'randomValue' })
         }).not.toThrow()
+        
+        expect(() => {
+          store.dispatch({ type: 42, randomKey: 'randomValue' })
+        }).toThrow()
+
       })
 
       it(`dispatch should take any dispatched action and run it 
           through the reducer function to produce a new state.`, () => {
-        const reducer = () => {} // Your reducer function here!
-
+        const reducer = (state={foo:"bar"}, action= {}) => {
+          switch(action.type){
+      
+            case 'BAZIFY':
+              return {...state, foo:'baz'};
+              default:
+                  return state;
+          }
+      }
         const store = createStore(reducer)
 
         expect(store.getState().foo).toBe('bar')
@@ -47,6 +59,44 @@ describe('dedux', () => {
         store.dispatch({ type: 'BAZIFY' })
 
         expect(store.getState().foo).toBe('baz')
+
+    
+
+      })
+  
+
+    it(`dispatch should take any dispatched action and run it 
+          through the reducer function to produce a new state.`, () => {
+        const reducer = (state={count: 0}, action= {}) => {
+          switch(action.type){
+            
+              case "INCREMENT_COUNTER":
+                  return {...state, count: state.count + 1};
+      
+              case "DECREMENT_COUNTER":
+                  return {...state, count: state.count -1};
+      
+              default:
+                  return state;
+          }
+      }
+        const store = createStore(reducer)
+
+        expect(store.getState().count).toBe(0)
+
+
+        store.dispatch({ type: 'INCREMENT_COUNTER' })
+
+        expect(store.getState().count).toBe(1)
+
+        store.dispatch({ type: 'INCREMENT_COUNTER' })
+
+        expect(store.getState().count).toBe(2)
+
+        store.dispatch({ type: 'DECREMENT_COUNTER' })
+
+        expect(store.getState().count).toBe(1)
+
       })
     })
 
@@ -98,7 +148,7 @@ describe('dedux', () => {
     })
   })
 
-  describe.skip('applyMiddleware', () => {
+  describe('applyMiddleware', () => {
     // Don't start this until you've completed part 2 of the challenge
     it('can apply middleware to dispatched actions', () => {
       const reducer = () => null
